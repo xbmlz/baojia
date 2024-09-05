@@ -23,6 +23,7 @@ func main() {
 	r.LoadHTMLGlob("templates/*")
 
 	r.GET("/admin", api.AdminView)
+
 	apis := r.Group("api")
 	{
 		apis.GET("product", api.GetProducts)

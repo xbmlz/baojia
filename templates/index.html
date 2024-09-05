@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@{ .title }</title>
+    <link rel="icon" href="/public/favicon.svg" type="image/x-svg+xml" />
     <!-- 引入样式文件 -->
     <link rel="stylesheet" href="/public/vant/index.css" />
 
@@ -35,21 +36,16 @@
           placeholder="请输入搜索关键词"
         ></van-search> -->
 
-        <van-row style="margin-top: 1rem; padding: 0 1rem">
-          <van-col span="18">
-            <span style="font-size: 2rem">{{ tabActive }}</span>
-          </van-col>
-          <van-col span="6">
-            <div style="font-size: 0.8rem; opacity: 0.8">更新时间</div>
-            <div style="margin-top: 0.8rem">@{ .today }</div>
-          </van-col>
-        </van-row>
+        <div style="padding: 0 1rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center">
+          <div style="margin-left: 0.2rem; opacity: 0.75;">更新时间 : @{ .today }</div>
+          <van-icon name="replay" @click="handleRefresh"></van-icon>
+        </div>
 
         <div
           style="
             margin-top: 1rem;
             padding: 0 1rem;
-            height: calc(100vh - 12rem);
+            height: calc(100vh - 10rem);
             overflow-y: auto;
           "
         >
@@ -62,9 +58,13 @@
             style="margin-bottom: 0.5rem"
           >
             <template #default>
-              <div style="display: flex; justify-content: end; align-items: center;">
-                <span style="margin-right: 0.8rem;">今日</span>
-                <span style="font-size: 1.25rem; color: #1989fa;">¥ {{ i.price || '-' }}</span>
+              <div
+                style="display: flex; justify-content: end; align-items: center"
+              >
+                <span style="margin-right: 0.8rem">今日</span>
+                <span style="font-size: 1.25rem; color: #1989fa"
+                  >¥ {{ i.price || '-' }}</span
+                >
               </div>
             </template>
           </van-cell>
@@ -95,6 +95,10 @@
           this.getTodayPrice();
         },
         methods: {
+          handleRefresh() {
+            this.getTodayPrice();
+            vant.Toast.success('刷新成功');
+          },
           getTodayPrice() {
             try {
               fetch(`/api/product?brand=${this.tabActive}`)

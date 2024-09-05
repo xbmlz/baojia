@@ -81,3 +81,6 @@ INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "ver
 INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (69, '华为', 'Pura系列', '华为Pura 70 Pro', '罗兰紫', '12GB+512GB');
 INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (70, '华为', 'Pura系列', '华为Pura 70 Pro', '罗兰紫', '12GB+1TB');
 
+-- 华为Pura 70 Ultra  颜色 香颂绿 星芒黑 星芒白 摩卡棕 版本 16GB+1TB 16GB+512GB
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (71, '华为', 'Pura系列', '华为Pura 70 Ultra', '香颂绿', '16GB+512GB');
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (72, '华为', 'Pura系列', '华为Pura 70 Ultra', '香颂绿', '16GB+1TB');

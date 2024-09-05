@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@{ .title }</title>
+    <!-- favicon -->
+    <link rel="icon" href="/public/favicon.svg" type="image/x-svg+xml" />
+    <!-- layui -->
+    <link href="/public/layui/css/layui.css" rel="stylesheet" />
+    <!-- custom -->
+    <style>
+      ::-webkit-scrollbar {
+        width: 7px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-track {
+        background-color: rgb(0 0 0 / 5%);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.6);
+        background-color: rgb(144 147 153 / 30%);
+        background-color: rgba(144, 147, 153, 0.3);
+        border-radius: 2px;
+        box-shadow: inset 0 0 6px rgb(0 0 0 / 20%);
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #b6b7b9;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" class="layui-layout layui-layout-admin">
+      <div class="layui-header">
+        <div class="layui-logo layui-hide-xs">报价管理端</div>
+        <ul class="layui-nav layui-layout-left">
+          <li class="layui-nav-item layui-this">
+            <a href="/admin">报价管理</a>
+          </li>
+          <!-- <li class="layui-nav-item"><a href="">收货单</a></li> -->
+        </ul>
+      </div>
+      <div class="layui-container" style="padding: 20px; top: 60px">
+        <form class="layui-form layui-form-pane layui-row layui-col-space16">
+          <div class="layui-col-md3">
+            <div class="layui-form-item" style="margin-bottom: 0">
+              <label class="layui-form-label">品牌 :</label>
+              <div class="layui-input-block">
+                <select name="interest" lay-filter="brand-select">
+                  <option value="" selected>全部</option>
+                  <option value="苹果">苹果</option>
+                  <option value="华为">华为</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+        <table class="layui-hide" id="price-table"></table>
+      </div>
+    </div>
+
+    <!-- template -->
+    <script type="text/html" id="toolbar">
+      <div class="layui-btn-container">
+        <h3>@{ .today } <span style="margin-left: 10px;">报价单</span></h3>
+      </div>
+    </script>
+
+    <!-- HTML Content -->
+    <script src="/public/layui/layui.js"></script>
+    <script>
+      // Usage
+      layui.use(function () {
+        const { $, layer, util, table, form } = layui;
+
+        form.on("select(brand-select)", function (data) {
+          table.reload("price-table", {
+            where: { brand: data.value },
+          });
+        });
+
+        table.render({
+          id: "price-table",
+          elem: "#price-table",
+          url: "/api/product",
+          editTrigger: "dblclick",
+          height: "full-180",
+          toolbar: "#toolbar",
+          defaultToolbar: [
+            "filter",
+            "exports",
+            "print",
+            {
+              title: "刷新",
+              name: "refresh",
+              layEvent: "LAYTABLE_REFRESH",
+              icon: "layui-icon-refresh",
+              onClick: function (obj) {
+                console.log(obj);
+                table.reloadData("price-table");
+              },
+            },
+          ],
+          cols: [
+            [
+              { field: "id", title: "ID", width: 80, align: "center" },
+              { field: "brand", title: "品牌", align: "center" },
+              { field: "series", title: "系列", align: "center" },
+              { field: "model", title: "型号", align: "center" },
+              { field: "color", title: "颜色", align: "center" },
+              { field: "version", title: "版本", align: "center" },
+              { field: "last_price", title: "昨日价格", align: "center" },
+              {
+                field: "price",
+                title: "今日价格",
+                align: "center",
+                edit: "text",
+              },
+            ],
+          ],
+        });
+
+        table.on("edit(price-table)", function (obj) {
+          const { value, field, data } = obj;
+          const isNil = value.replace(/\s/g, "") === "";
+          const isNumber = /^-?\d+(\.\d+)?$/.test(value);
+          if (isNil) {
+            layer.tips("价格不能为空", this, { tips: 1 });
+            return obj.reedit();
+          }
+          if (!isNumber) {
+            layer.tips("价格必须为数字", this, { tips: 1 });
+            return obj.reedit();
+          }
+
+          $.ajax({
+            url: "/api/price",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({
+              product_id: data.id,
+              price: parseFloat(value),
+            }),
+            success: function (res) {
+              if (res.code === 0) {
+                layer.msg("修改成功");
+              } else {
+                layer.msg("修改失败：" + res.msg);
+              }
+            },
+            error: function (err) {
+              layer.msg("修改失败：" + err.statusText);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

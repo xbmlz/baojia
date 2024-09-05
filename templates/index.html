@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@{ .title }</title>
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="/public/vant/index.css" />
+
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="/public/vue/vue.min.js"></script>
+    <script src="/public/vant/vant.min.js"></script>
+    <style>
+      html,
+      body,
+      #app {
+        height: 100%;
+        background-color: #f7f8fa;
+
+        --cell-value-color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div v-if="tabbarActive === 0">
+        <van-tabs v-model="tabActive" @change="getTodayPrice">
+          <van-tab title="苹果" name="苹果"></van-tab>
+          <van-tab title="华为" name="华为"></van-tab>
+        </van-tabs>
+
+        <!-- <van-search
+          v-model="searchValue"
+          placeholder="请输入搜索关键词"
+        ></van-search> -->
+
+        <van-row style="margin-top: 1rem; padding: 0 1rem">
+          <van-col span="18">
+            <span style="font-size: 2rem">{{ tabActive }}</span>
+          </van-col>
+          <van-col span="6">
+            <div style="font-size: 0.8rem; opacity: 0.8">更新时间</div>
+            <div style="margin-top: 0.8rem">@{ .today }</div>
+          </van-col>
+        </van-row>
+
+        <div
+          style="
+            margin-top: 1rem;
+            padding: 0 1rem;
+            height: calc(100vh - 12rem);
+            overflow-y: auto;
+          "
+        >
+          <van-cell
+            v-for="i in products"
+            :key="i.id"
+            :title="i.model"
+            :label="`${i.color} ${i.version}`"
+            border
+            style="margin-bottom: 0.5rem"
+          >
+            <template #default>
+              <div style="display: flex; justify-content: end; align-items: center;">
+                <span style="margin-right: 0.8rem;">今日</span>
+                <span style="font-size: 1.25rem; color: #1989fa;">¥ {{ i.price || '-' }}</span>
+              </div>
+            </template>
+          </van-cell>
+        </div>
+      </div>
+      <div v-else>开发中...</div>
+      <van-tabbar v-model="tabbarActive">
+        <van-tabbar-item icon="bag-o">报价</van-tabbar-item>
+        <van-tabbar-item icon="user-o">我的</van-tabbar-item>
+      </van-tabbar>
+    </div>
+
+    <script>
+      // 在 #app 标签下渲染一个按钮组件
+      new Vue({
+        el: "#app",
+        data() {
+          return {
+            tabActive: "苹果",
+            tabbarActive: 0,
+            searchValue: "",
+
+            products: [],
+          };
+        },
+        created() {
+          this.getTodayPrice();
+        },
+        methods: {
+          getTodayPrice() {
+            try {
+              fetch(`/api/product?brand=${this.tabActive}`)
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.code === 0) {
+                    this.products = data.data;
+                  } else {
+                    vant.Toast("获取数据失败");
+                  }
+                });
+            } catch (error) {
+              vant.Toast("网络请求失败");
+            }
+          },
+        },
+      });
+
+      // 可以通过下面的方式手动注册
+      //   Vue.use(vant.Lazyload);
+    </script>
+  </body>
+</html>

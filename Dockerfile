@@ -13,6 +13,14 @@ RUN go build -o baojia .
 # Run
 FROM alpine:latest
 
+
+ARG TIMEZONE
+ENV TIMEZONE=${TIMEZONE:-"Asia/Shanghai"}
+
+RUN apk add --no-cache bash ca-certificates tzdata \
+    && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
+    && echo ${TIMEZONE} > /etc/timezone
+
 WORKDIR /app
 
 COPY --from=builder /src/baojia .

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -113,6 +114,7 @@ func AppLogin(ctx *gin.Context) {
 			"code": 4012,
 			"msg":  "密码错误",
 		})
+		return
 	}
 
 	session := sessions.Default(ctx)
@@ -132,6 +134,46 @@ func AppLogout(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "退出成功",
+	})
+}
+
+func GetProductPicker(ctx *gin.Context) {
+	products := model.GetProductList("")
+	// 按照品牌分组
+	// [{text: "品牌1", children: [{text: "产品1"}, {text: "产品2"}]}, {text: "品牌2", children: [{text: "产品3"}, { text: "产品4"}]}]
+	type Picker struct {
+		Text     string `json:"text"`
+		Children []struct {
+			Text string `json:"text"`
+		} `json:"children"`
+	}
+	brandMap := make(map[string][]model.Product)
+	for _, product := range products {
+		brandMap[product.Brand] = append(brandMap[product.Brand], product)
+	}
+
+	pickers := make([]Picker, 0)
+	for brand, products := range brandMap {
+		picker := Picker{
+			Text: brand,
+			Children: make([]struct {
+				Text string `json:"text"`
+			}, 0),
+		}
+		for _, product := range products {
+			picker.Children = append(picker.Children, struct {
+				Text string `json:"text"`
+			}{
+				Text: fmt.Sprintf("%s-%s-%s", product.Model, product.Color, product.Version),
+			})
+		}
+		pickers = append(pickers, picker)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "success",
+		"data": pickers,
 	})
 }
 

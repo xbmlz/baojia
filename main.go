@@ -46,6 +46,7 @@ func main() {
 	apiRouter := r.Group("/api")
 	{
 		apiRouter.GET("/product", api.GetAppProducts)
+		apiRouter.GET("/product/picker", api.GetProductPicker)
 		apiRouter.POST("/register", api.AppRegister)
 		apiRouter.POST("/login", api.AppLogin)
 		apiRouter.POST("/logout", api.AppLogout)

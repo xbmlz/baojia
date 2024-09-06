@@ -158,3 +158,9 @@ INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "ver
 INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (124, '华为', 'Mate系列', 'Mate X5', '幻影紫', '16GB+512GB');
 INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (125, '华为', 'Mate系列', 'Mate X5', '幻影紫', '16GB+512GB典藏版');
 INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (126, '华为', 'Mate系列', 'Mate X5', '幻影紫', '16GB+1TB典藏版');
+
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (127, '华为', 'Mate系列', 'Mate X5', '羽砂黑', '12GB+256GB');
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (128, '华为', 'Mate系列', 'Mate X5', '羽砂白', '12GB+256GB');
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (129, '华为', 'Mate系列', 'Mate X5', '羽砂金', '12GB+256GB');
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (130, '华为', 'Mate系列', 'Mate X5', '青山黛', '12GB+256GB');
+INSERT INTO "public"."products" ("id", "brand", "series", "model", "color", "version") VALUES (131, '华为', 'Mate系列', 'Mate X5', '幻影紫', '12GB+256GB');

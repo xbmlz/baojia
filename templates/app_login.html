@@ -74,7 +74,7 @@
         <!-- 注册 -->
         <van-form v-if="!isLogin" ref="formRef" class="login-form" @submit="handleRegister">
             <van-field v-model="registerForm.username" class="field-label" name="username" placeholder="用户名"
-                :rules="[{ pattern:/^.{3}$/, message: '用户名最少3位' }]">
+                :rules="[{ pattern:/^.{3,}$/, message: '用户名最少3位' }]">
                 <template #left-icon>
                     <van-icon name="user-o"></van-icon>
                 </template>
@@ -112,7 +112,7 @@
         <!-- 登录 -->
         <van-form v-else ref="formRef" class="login-form" @submit="handlelogin">
             <van-field v-model="loginForm.username" class="field-label" name="username" placeholder="用户名"
-                :rules="[{ pattern:/^.{3}$/, message: '用户名最少3位' }]">
+                :rules="[{ pattern:/^.{3,}$/, message: '用户名最少3位' }]">
                 <template #left-icon>
                     <van-icon name="user-o"></van-icon>
                 </template>

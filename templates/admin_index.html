@@ -133,8 +133,11 @@
 
       table.on("edit(price-table)", function (obj) {
         const { value, field, data } = obj;
-        console.log(value, field, data);
-        
+        console.log(obj);
+
+        // 修改为最新价格
+        const recovery_price = (parseFloat(data.price) || 0) + (parseFloat(data.profit) || 0);
+
         const isNil = value.replace(/\s/g, "") === "";
         const isNumber = /^-?\d+(\.\d+)?$/.test(value);
         if (isNil) {
@@ -159,7 +162,13 @@
           success: function (res) {
             if (res.code === 0) {
               layer.msg("修改成功");
-              table.reload("price-table");
+              table.updateRow('price-table', {
+                index: obj.index,
+                data: {
+                  recovery_price: recovery_price,
+                }
+              })
+
             } else {
               layer.msg("修改失败：" + res.msg);
             }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    @{ template "app_head.html". }
+    <title>@{.title }</title>
+    <style>
+      .personal-center {
+        padding: 20px;
+      }
+
+      .avatar-wrapper {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+      }
+
+      .user-info p {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .van-popup--bottom {
+        bottom: 50px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="personal-center">
+        <div class="avatar-wrapper">
+          <img
+            src="https://img01.yzcdn.cn/vant/cat.jpeg"
+            alt="头像"
+            class="avatar"
+          />
+        </div>
+        <div class="user-info">
+          <p class="username">@{ .user.Username }</p>
+          <!-- <p class="user-email">邮箱地址</p> -->
+        </div>
+        <van-cell-group>
+          <!-- <van-cell title="我的订单" is-link>
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell> -->
+          <!-- <van-cell title="我的收藏" is-link>
+                <template #right-icon>
+                  <van-icon name="arrow" />
+                </template>
+              </van-cell>
+              <van-cell title="设置" is-link>
+                <template #right-icon>
+                  <van-icon name="arrow" />
+                </template>
+              </van-cell>
+              <van-cell title="关于我们" is-link>
+                <template #right-icon>
+                  <van-icon name="arrow" />
+                </template>
+              </van-cell> -->
+          <van-cell title="退出登录" is-link @click="showLogoutAction = true">
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell>
+        </van-cell-group>
+      </div>
+
+      <van-action-sheet
+        v-model="showLogoutAction"
+        :actions="logoutActions"
+        @select="onSelectLogoutAction"
+        cancel-text="取消"
+      ></van-action-sheet>
+    </div>
+
+    <script>
+      new Vue({
+        el: "#app",
+        data() {
+          return {
+            showLogoutAction: false,
+            logoutActions: [
+              {
+                name: "退出登录",
+                color: "#ee0a24",
+              },
+            ],
+          };
+        },
+        created() {},
+        methods: {
+          onSelectLogoutAction(item) {
+            if (item.name === "退出登录") {
+              this.showLogoutAction = false;
+              this.handleLogout();
+            }
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

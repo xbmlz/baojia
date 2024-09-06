@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+   
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <van-nav-bar :title="tabbarActive"></van-nav-bar>
+
+    <!-- 报价 -->
+    <div v-if="tabbarActive === '报价'">
+      <van-tabs v-model="tabActive" @change="getTodayPrice">
+        <van-tab title="苹果" name="苹果"></van-tab>
+        <van-tab title="华为" name="华为"></van-tab>
+      </van-tabs>
+
+      <!-- <van-search
+          v-model="searchValue"
+          placeholder="请输入搜索关键词"
+        ></van-search> -->
+
+      <div style="
+            padding: 0 1rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          ">
+        <div style="margin-left: 0.2rem; opacity: 0.75">
+          更新时间 : @{ .today }
+        </div>
+        <van-icon name="replay" @click="handleRefresh"></van-icon>
+      </div>
+
+      <div style="
+            margin-top: 1rem;
+            padding: 0 1rem;
+            height: calc(100vh - 10rem);
+            overflow-y: auto;
+          ">
+        <van-cell v-for="i in products" :key="i.id" :title="i.model" :label="`${i.color} ${i.version}`" border
+          style="margin-bottom: 0.5rem">
+          <template #default>
+            <div style="display: flex; justify-content: end; align-items: center">
+              <span style="margin-right: 0.8rem">今日</span>
+              <span style="font-size: 1.25rem; color: #1989fa">¥ {{ i.recovery_price || '-' }}</span>
+            </div>
+          </template>
+        </van-cell>
+      </div>
+    </div>
+    <!-- 出货 -->
+    <div v-if="tabbarActive === '出货'">
+      <van-cell-group>
+        <van-cell title="单元格" value="内容" />
+        <van-cell title="单元格" value="内容" label="描述信息" />
+      </van-cell-group>
+      <div style="position: fixed; bottom: 80px; right: 20px">
+        <van-button type="primary" color="linear-gradient(to right, #ff6034, #ee0a24)"
+          style="border-radius: 50%; width: 50px; height: 50px;line-height: 50px;"
+          @click="onClickOutGoods">出</van-button>
+      </div>
+    </div>
+
+    <!-- 我的 -->
+    <div v-else-if="tabbarActive === '我的'">
+      
+    </div>
+
+    <!-- 底部导航 -->
+    <van-tabbar v-model="tabbarActive">
+      <van-tabbar-item name="报价" icon="bag-o">报价</van-tabbar-item>
+      <van-tabbar-item name="出货" icon="send-gift-o">出货</van-tabbar-item>
+      <van-tabbar-item name="我的" icon="user-o">我的</van-tabbar-item>
+    </van-tabbar>
+
+    <van-action-sheet v-model="showLogoutAction" :actions="logoutActions" @select="onSelectLogoutAction"
+      cancel-text="取消"></van-action-sheet>
+
+
+    <van-action-sheet v-model="outGoodsShow" title="填写出货单">
+      <van-form @submit="onSubmitOutGoods">
+        <!-- <van-field v-model="username" name="用户名" label="用户名" placeholder="用户名"
+          :rules="[{ required: true, message: '请填写用户名' }]" />
+        <van-field v-model="password" type="password" name="密码" label="密码" placeholder="密码"
+          :rules="[{ required: true, message: '请填写密码' }]" /> -->
+        <van-field readonly clickable name="brandPicker" :value="outGoodsInfo.brand" label="品牌" placeholder="点击选择品牌"
+          @click="showBrandPicker = true"></van-field>
+        <van-field readonly clickable name="productPicker" :value="outGoodsInfo.product" label="产品" placeholder="点击选择产品"
+          @click="showProductPicker = true"></van-field>
+
+        <van-field v-model="outGoodsInfo.sn" name="sn" label="SN码" placeholder="请填写SN(序列号)"
+          :rules="[{ required: true, message: 'SN码' }]"></van-field>
+
+        <van-field v-model="outGoodsInfo.contact" name="联系方式" label="联系方式" placeholder="请填写联系方式(微信号或手机号)"
+          :rules="[{ required: true, message: '请填写联系方式' }]"></van-field>
+
+        <van-field v-model="outGoodsInfo.address" name="期望取货地址" type="textarea" rows="2" autosize label="期望取货地址"
+          placeholder="请填写期望取货地址(尽量填写地站站点)" :rules="[{ required: true, message: '请填写期望取货地址' }]"></van-field>
+
+        <van-field readonly clickable name="期望取货时间" :value="formatDateToYMDH(outGoodsInfo.time)" label="期望取货时间"
+          placeholder="点击选择期望取货时间" @click="showTimePicker = true"></van-field>
+
+
+        <van-field name="order_img" label="订单截图">
+          <template #input>
+            <van-uploader v-model="outGoodsInfo.order_img" :max-count="1"></van-uploader>
+          </template>
+        </van-field>
+        <van-field name="package_front_img" label="包装盒正面照片">
+          <template #input>
+            <van-uploader v-model="outGoodsInfo.package_front_img" :max-count="1"></van-uploader>
+          </template>
+        </van-field>
+
+        <van-field name="package_back_img" label="包装盒背面照片">
+          <template #input>
+            <van-uploader v-model="outGoodsInfo.package_back_img" :max-count="1"></van-uploader>
+          </template>
+        </van-field>
+
+        <div style="margin: 16px;">
+          <van-button round block type="info" native-type="submit">提交</van-button>
+        </div>
+      </van-form>
+    </van-action-sheet>
+
+
+    <van-popup v-model="showBrandPicker" position="bottom">
+      <van-picker show-toolbar :columns="brandData" @cancel="showPicker = false" :default-index="0"
+        @confirm="onConfirmBrand"></van-picker>
+    </van-popup>
+
+    <van-popup v-model="showProductPicker" position="bottom">
+      <van-picker show-toolbar :columns="productData" @cancel="showPicker = false" :default-index="0"
+        @confirm="onConfirmProduct"></van-picker>
+    </van-popup>
+
+    <van-popup v-model="showTimePicker" position="bottom">
+      <van-datetime-picker type="datehour" :formatter="formatter" @confirm="onConfirmTime"
+        @cancel="showTimePicker = false"></van-datetime-picker>
+    </van-popup>
+  </div>
+
+  <script>
+    // 7FJO2bkJ9H24eDlP6JaE
+    // MxOcLfwNLaEq8HD4EkMAksuUgxHAYHKYvxvWPZaI
+    // 在 #app 标签下渲染一个按钮组件
+    new Vue({
+      el: "#app",
+      // 设置分隔符
+      data() {
+        return {
+          tabbarActive: "报价",
+          searchValue: "",
+
+          outGoodsShow: false,
+          showProductPicker: false,
+          showBrandPicker: false,
+          showTimePicker: false,
+
+          brandData: ['苹果', '华为'],
+          productData: [],
+
+
+          outGoodsInfo: {
+            brand: "苹果",
+            product_id: "",
+            product: "",
+            order_img: [],
+            package_front_img: [],
+            package_back_img: [],
+            sn: "",
+            address: "",
+            contact: "",
+            time: new Date(),
+          },
+
+          
+         
+        };
+      },
+
+      mounted() {
+        this.outGoodsRef = this.$refs.outGoodsRef;
+      },
+      methods: {
+        onSubmitOutGoods() { },
+
+        onConfirmTime(time) {
+          this.outGoodsInfo.time = time;
+          this.showTimePicker = false;
+        },
+        onConfirmBrand(value, index) {
+          this.outGoodsInfo.brand = value;
+          this.showBrandPicker = false;
+        },
+        onConfirmProduct(value, index) {
+          this.outGoodsInfo.product = value;
+          this.outGoodsInfo.product_id = value.split("-")[0];
+          this.showProductPicker = false;
+        },
+        onClickOutGoods() {
+          this.outGoodsShow = true;
+          this.getProductData();
+        },
+       
+        handleRefresh() {
+          this.getTodayPrice();
+          vant.Toast.success("刷新成功");
+        },
+        handleLogout() {
+          fetch("/api/logout", {
+            method: "POST",
+          }).then((res) => res.json())
+            .then((res) => {
+              if (res.code === 0) {
+                vant.Toast.success("退出登录成功");
+                setTimeout(() => {
+                  location.href = "/";
+                }, 1000);
+              } else {
+                vant.Toast.fail("退出登录失败");
+              }
+            });
+        },
+        getProductData() {
+          try {
+            fetch(`/api/product?brand=${this.outGoodsInfo.brand}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.code === 0) {
+                  // [`${data.data.model + "-" + data.data.color + "-" + data.data.version}`]
+                  for (item of data.data) {
+                    this.productData.push(`${item.id}-${item.model}-${item.color}-${item.version}`);
+                  }
+
+                } else {
+                  vant.Toast("获取数据失败");
+                }
+              });
+          } catch (error) {
+            vant.Toast("网络请求失败");
+          }
+        },
+
+        getTodayPrice() {
+          try {
+            fetch(`/api/product?brand=${this.tabActive}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.code === 0) {
+                  this.products = data.data;
+                } else {
+                  vant.Toast("获取数据失败");
+                }
+              });
+          } catch (error) {
+            vant.Toast("网络请求失败");
+          }
+        },
+        formatter(type, val) {
+          if (type === 'year') {
+            return `${val}年`;
+          } else if (type === 'month') {
+            return `${val}月`;
+          } else if (type === 'day') {
+            return `${val}日`;
+          } else if (type === 'hour') {
+            return `${val}时`;
+          }
+          return val;
+        },
+        formatDateToYMDH(date) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hour = String(date.getHours()).padStart(2, '0');
+          return `${year}-${month}-${day} ${hour}:00`;
+        }
+      },
+    });
+
+    // 可以通过下面的方式手动注册
+    //   Vue.use(vant.Lazyload);
+  </script>
+</body>
+
+</html>

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@{ .title }</title>
     <link rel="icon" href="/public/favicon.svg" type="image/x-svg+xml" />
     <!-- 引入样式文件 -->
@@ -17,9 +17,14 @@
             box-sizing: border-box;
         }
 
+        html,
+        body,
         #app {
-            width: 100vw;
-            height: 100vh;
+            height: 100%;
+        }
+
+        #app {
+
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -60,12 +65,11 @@
 <body>
     <div id="app">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <!-- <div class="logo enter-y mb-8 mt-8">
-                <div class="!h-30 !w-30" name="logo"><svg aria-hidden="true" class="!h-30 !w-30"
-                        style="width: 16px; height: 16px;">
-                        <use xlink:href="#icon-logo" fill="#333"></use>
-                    </svg></div>
-            </div> -->
+            <div class="logo enter-y mb-8 mt-8">
+                <p style="margin-bottom: 30px; font-size: 28px; font-weight: bold; color: #07c160;">
+                    皮皮回收
+                </p>
+            </div>
             <div class="mb-12 text-2xl font-black"
                 style="margin-bottom: 30px; font-size: 28px; font-weight: bold; color: #07c160;">
                 {{ isLogin ? '登录' : '注册' }}

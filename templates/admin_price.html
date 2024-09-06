@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    @{ template "admin_head.html". }
+</head>
+
+<body class="layui-fluid">
+    <form class="layui-form layui-form-pane layui-row layui-col-space16">
+        <div class="layui-col-md3">
+            <div class="layui-form-item" style="margin-bottom: 0">
+                <label class="layui-form-label">品牌 :</label>
+                <div class="layui-input-block">
+                    <select name="interest" lay-filter="brand-select">
+                        <option value="" selected>全部</option>
+                        <option value="苹果">苹果</option>
+                        <option value="华为">华为</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="price-table"></table>
+
+    <script>
+        // Usage
+        layui.use(function () {
+            const { $, layer, util, table, form } = layui;
+
+            form.on("select(brand-select)", function (data) {
+                table.reload("price-table", {
+                    where: { brand: data.value },
+                });
+            });
+
+            table.render({
+                id: "price-table",
+                elem: "#price-table",
+                url: "/admin/api/product",
+                // editTrigger: "dblclick",
+                where: {
+                    brand: "",
+                    type: 1,
+                },
+                height: "full-80",
+                toolbar: "#toolbar",
+                defaultToolbar: [
+                    "filter",
+                    "exports",
+                    "print",
+                    {
+                        title: "刷新",
+                        name: "refresh",
+                        layEvent: "LAYTABLE_REFRESH",
+                        icon: "layui-icon-refresh",
+                        onClick: function (obj) {
+                            console.log(obj);
+                            table.reloadData("price-table");
+                        },
+                    },
+                ],
+                cols: [
+                    [
+                        { field: "id", title: "ID", width: 80, align: "center" },
+                        { field: "brand", title: "品牌", align: "center" },
+                        { field: "series", title: "系列", align: "center" },
+                        { field: "model", title: "型号", align: "center" },
+                        { field: "color", title: "颜色", align: "center" },
+                        { field: "version", title: "版本", align: "center" },
+                        // { field: "last_price", title: "昨日价格", align: "center" },
+                        { field: "price", title: "出货价", align: "center", edit: "text" },
+                        {
+                            field: "profit",
+                            title: "利润",
+                            align: "center",
+                            edit: "text",
+                        },
+                        { field: "recovery_price", title: "收货价", align: "center" },
+                    ],
+                ],
+            });
+
+            table.on("edit(price-table)", function (obj) {
+                const { value, field, data } = obj;
+                console.log(obj);
+
+                // 修改为最新价格
+                const recovery_price = (parseFloat(data.price) || 0) + (parseFloat(data.profit) || 0);
+
+                const isNil = value.replace(/\s/g, "") === "";
+                const isNumber = /^-?\d+(\.\d+)?$/.test(value);
+                if (isNil) {
+                    layer.tips("价格不能为空", this, { tips: 1 });
+                    return obj.reedit();
+                }
+                if (!isNumber) {
+                    layer.tips("价格必须为数字", this, { tips: 1 });
+                    return obj.reedit();
+                }
+
+                $.ajax({
+                    url: "/admin/api/price",
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        product_id: data.id,
+                        price: parseFloat(data.price),
+                        profit: parseFloat(data.profit),
+                    }),
+                    success: function (res) {
+                        if (res.code === 0) {
+                            layer.msg("修改成功");
+                            table.updateRow('price-table', {
+                                index: obj.index,
+                                data: {
+                                    recovery_price: recovery_price,
+                                }
+                            })
+
+                        } else {
+                            layer.msg("修改失败：" + res.msg);
+                        }
+                    },
+                    error: function (err) {
+                        layer.msg("修改失败：" + err.statusText);
+                    },
+                });
+            });
+        });
+    </script>
+</body>

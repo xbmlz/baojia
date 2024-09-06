@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    @{ template "app_head.html". }
+    <title>@{.title }</title>
+
+    <style>
+        .today-title {
+            padding: 0 1rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .today-list {
+            margin-top: 1rem;
+            padding: 0 1rem;
+            height: calc(100vh - 10rem);
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <van-tabs v-model="tabActive" @change="getTodayPrice">
+            <van-tab title="苹果" name="苹果"></van-tab>
+            <van-tab title="华为" name="华为"></van-tab>
+        </van-tabs>
+
+        <div class="today-title">
+            <div style="margin-left: 0.2rem; opacity: 0.75">
+                更新时间 : @{ .today }
+            </div>
+            <van-icon name="replay" @click="handleRefresh"></van-icon>
+        </div>
+
+        <div class="today-list">
+            <van-cell v-for="i in todayPrices" :key="i.id" :title="i.model" :label="`${i.color} ${i.version}`" border
+                style="margin-bottom: 0.5rem">
+                <template #default>
+                    <div style="display: flex; justify-content: end; align-items: center">
+                        <span style="margin-right: 0.8rem">今日</span>
+                        <span style="font-size: 1.25rem; color: #1989fa">¥ {{ i.recovery_price || '-' }}</span>
+                    </div>
+                </template>
+            </van-cell>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    tabActive: "苹果",
+                    todayPrices: [],
+                }
+            },
+            created() {
+                this.getTodayPrice();
+            },
+            methods: {
+                getTodayPrice() {
+                    try {
+                        fetch(`/api/product?brand=${this.tabActive}`)
+                            .then((res) => res.json())
+                            .then((data) => {
+                                if (data.code === 0) {
+                                    this.todayPrices = data.data;
+                                } else {
+                                    vant.Toast("获取数据失败");
+                                }
+                            });
+                    } catch (error) {
+                        vant.Toast("网络请求失败");
+                    }
+                },
+                handleRefresh() {
+                    this.getTodayPrice();
+                    vant.Toast.success("刷新成功");
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

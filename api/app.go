@@ -26,10 +26,33 @@ func AppIndexView(ctx *gin.Context) {
 		ctx.Redirect(http.StatusFound, "/login.html")
 		return
 	}
-	user, _ := model.GetUserByID(currentUser.(int))
 	ctx.HTML(http.StatusOK, "app_index.html", gin.H{
 		"title": "报价",
+	})
+}
+
+func AppPriceView(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "app_price.html", gin.H{
+		"title": "今日报价",
 		"today": time.Now().Format("2006-01-02"),
+	})
+}
+
+func AppSaleView(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "app_sale.html", gin.H{
+		"title": "出货",
+	})
+}
+
+func AppMyView(ctx *gin.Context) {
+	currentUser := ctx.MustGet(middleware.CurrentUserKey)
+	if currentUser == nil {
+		ctx.Redirect(http.StatusFound, "/login.html")
+		return
+	}
+	user, _ := model.GetUserByID(currentUser.(int))
+	ctx.HTML(http.StatusOK, "app_my.html", gin.H{
+		"title": "我的",
 		"user":  user,
 	})
 }

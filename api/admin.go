@@ -22,11 +22,10 @@ func AdminView(ctx *gin.Context) {
 	})
 }
 
-func formatPrice(value float64) string {
-	if value == 0 {
-		return ""
-	}
-	return strconv.FormatFloat(value, 'f', -1, 64)
+func AdminPriceView(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "admin_price.html", gin.H{
+		"title": "管理价格",
+	})
 }
 
 func GetProducts(ctx *gin.Context) {
@@ -66,4 +65,11 @@ func SavePrice(ctx *gin.Context) {
 		"code": 0,
 		"msg":  "success",
 	})
+}
+
+func formatPrice(value float64) string {
+	if value == 0 {
+		return ""
+	}
+	return strconv.FormatFloat(value, 'f', -1, 64)
 }

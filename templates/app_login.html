@@ -193,7 +193,7 @@
                                     vant.Toast("注册成功");
                                     this.isLogin = true;
                                 } else {
-                                    vant.Toast("注册失败:" + data.message);
+                                    vant.Toast("注册失败:" + data.msg);
                                 }
                             })
                     } catch (error) {
@@ -227,7 +227,7 @@
                                     vant.Toast("登录成功");
                                     window.location.href = "/";
                                 } else {
-                                    vant.Toast("登录失败:" + data.message);
+                                    vant.Toast("登录失败:" + data.msg);
                                 }
                             })
                     } catch (error) {

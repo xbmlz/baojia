@@ -5,6 +5,8 @@ services:
         build: .
         container_name: baojia
         restart: always
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
         environment:
             - TZ=Asia/Shanghai
             - DB_DSN=host=193.112.175.178 user=xbmlz password=xbmlz@666 dbname=baojia port=15432 sslmode=disable TimeZone=Asia/Shanghai

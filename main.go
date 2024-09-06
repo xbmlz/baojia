@@ -49,5 +49,5 @@ func main() {
 		apiRouter.POST("logout", api.AppLogout)
 	}
 
-	r.Run()
+	r.Run("0.0.0.0:8080")
 }

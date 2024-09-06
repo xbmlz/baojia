@@ -17,7 +17,7 @@ FROM alpine:latest
 ARG TIMEZONE
 ENV TIMEZONE=${TIMEZONE:-"Asia/Shanghai"}
 
-RUN RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
 RUN apk add --no-cache bash ca-certificates tzdata \
     && ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \

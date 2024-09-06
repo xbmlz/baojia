@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@{ .title }</title>
+    <link rel="icon" href="/public/favicon.svg" type="image/x-svg+xml" />
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="/public/vant/index.css" />
+
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="/public/vue/vue.min.js"></script>
+    <script src="/public/vant/vant.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #app {
+            width: 100vw;
+            height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-form {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0rpx 4rpx 24rpx 0rpx rgba(0, 0, 0, 0.1);
+        }
+
+        .field-label {
+            margin-bottom: 16px;
+        }
+
+        .login-btn {
+            margin-bottom: 16px;
+            margin-top: 30px;
+        }
+
+        .tips {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 16px;
+            color: #07c160;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <!-- <div class="logo enter-y mb-8 mt-8">
+                <div class="!h-30 !w-30" name="logo"><svg aria-hidden="true" class="!h-30 !w-30"
+                        style="width: 16px; height: 16px;">
+                        <use xlink:href="#icon-logo" fill="#333"></use>
+                    </svg></div>
+            </div> -->
+            <div class="mb-12 text-2xl font-black"
+                style="margin-bottom: 30px; font-size: 28px; font-weight: bold; color: #07c160;">
+                {{ isLogin ? '登录' : '注册' }}
+            </div>
+        </div>
+        <!-- 注册 -->
+        <van-form v-if="!isLogin" ref="formRef" class="login-form" @submit="handleRegister">
+            <van-field v-model="registerForm.username" class="field-label" name="username" placeholder="用户名"
+                :rules="[{ pattern:/^.{3}$/, message: '用户名最少3位' }]">
+                <template #left-icon>
+                    <van-icon name="user-o"></van-icon>
+                </template>
+            </van-field>
+            <van-field v-model="registerForm.password" class="field-label" :type="switchPassType ? 'password' : 'text'"
+                name="password" placeholder="密码"
+                :rules="[{ pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/, message: '密码必须包含至少6位数字和字母的组合' }]"
+                @click-right-icon="switchPassType=!switchPassType">
+                <template #left-icon>
+                    <van-icon name="shield-o"></van-icon>
+                </template>
+                <template #right-icon>
+                    <van-icon v-if="switchPassType" name="eye-o"></van-icon>
+                    <van-icon v-else name="closed-eye"></van-icon>
+                </template>
+            </van-field>
+            <van-field v-model="registerForm.againPassword" class="field-label"
+                :type="switchPassType ? 'password' : 'text'" name="password" placeholder="确认密码"
+                :rules="[{ validator:againPasswordValidator, message: '两次密码输入不一致' }]"
+                @click-right-icon="switchPassType=!switchPassType">
+                <template #left-icon>
+                    <van-icon name="shield-o"></van-icon>
+                </template>
+                <template #right-icon>
+                    <van-icon v-if="switchPassType" name="eye-o"></van-icon>
+                    <van-icon v-else name="closed-eye"></van-icon>
+                </template>
+            </van-field>
+
+            <van-button class="login-btn" type="primary" round block native-type="submit" :loading="registerLoading">
+                注册
+            </van-button>
+            <div class="tips" @click="isLogin = !isLogin">已有账号？去登录</div>
+        </van-form>
+        <!-- 登录 -->
+        <van-form v-else ref="formRef" class="login-form" @submit="handlelogin">
+            <van-field v-model="loginForm.username" class="field-label" name="username" placeholder="用户名"
+                :rules="[{ pattern:/^.{3}$/, message: '用户名最少3位' }]">
+                <template #left-icon>
+                    <van-icon name="user-o"></van-icon>
+                </template>
+            </van-field>
+            <van-field v-model="loginForm.password" class="field-label" :type="switchPassType ? 'password' : 'text'"
+                name="password" placeholder="密码"
+                :rules="[{ pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/, message: '密码必须包含至少6位数字和字母的组合' }]"
+                @click-right-icon="switchPassType=!switchPassType">
+                <template #left-icon>
+                    <van-icon name="shield-o"></van-icon>
+                </template>
+                <template #right-icon>
+                    <van-icon v-if="switchPassType" name="eye-o"></van-icon>
+                    <van-icon v-else name="closed-eye"></van-icon>
+                </template>
+            </van-field>
+
+            <van-button class="login-btn" type="primary" round block native-type="submit" :loading="loginLoading">
+                登录
+            </van-button>
+            <div class="tips" @click="isLogin = !isLogin">没有账号？去注册</div>
+        </van-form>
+    </div>
+
+    <script>
+        // 在 #app 标签下渲染一个按钮组件
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    switchPassType: true, // 密码是否可见
+                    registerForm: {
+                        username: '',
+                        password: '',
+                        againPassword: ''
+                    },
+                    loginForm: {
+                        username: '',
+                        password: '',
+                    },
+                    registerLoading: false,
+                    loginLoading: false,
+                    isLogin: true, // 是否展示登录
+                }
+            },
+            methods: {
+                // 二次密码确认
+                againPasswordValidator(val) {
+                    if (val !== this.registerForm.password) {
+                        return false
+                    } else {
+                        return true
+                    }
+                    console.log("校验二次密码", val)
+                },
+
+                // 注册
+                handleRegister() {
+                    this.isLogin = true
+                    this.registerLoading = true
+
+                    try {
+                        fetch('/api/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.registerForm)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data)
+                                if (data.code === 0) {
+                                    vant.Toast("注册成功");
+                                    this.isLogin = true;
+                                } else {
+                                    vant.Toast("注册失败:" + data.message);
+                                }
+                            })
+                    } catch (error) {
+                        console.log(error)
+                        vant.Toast("注册失败:" + error.message);
+                    } finally {
+                        this.registerLoading = false
+                    }
+
+                    // setTimeout(() => {
+                    //     this.registerLoading = false
+                    //     vant.Toast("注册成功");
+                    // }, 1000)
+                },
+
+                // 登录
+                handlelogin() {
+                    this.loginLoading = true
+                    try {
+                        fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.loginForm)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data)
+                                if (data.code === 0) {
+                                    vant.Toast("登录成功");
+                                    window.location.href = "/";
+                                } else {
+                                    vant.Toast("登录失败:" + data.message);
+                                }
+                            })
+                    } catch (error) {
+                        console.log(error)
+                        vant.Toast("登录失败:" + error.message);
+                    } finally {
+                        this.loginLoading = false
+                    }
+                    // setTimeout(() => {
+                    //     this.loginLoading = false
+                    //     vant.Toast("登录成功");
+                    // }, 1000)
+                }
+            },
+        });
+
+        // // 调用函数组件，弹出一个 Toast
+        // vant.Toast("提示");
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@{ .title }</title>
+  <link rel="icon" href="/public/favicon.svg" type="image/x-svg+xml" />
+  <!-- 引入样式文件 -->
+  <link rel="stylesheet" href="/public/vant/index.css" />
+
+  <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+  <script src="/public/vue/vue.min.js"></script>
+  <script src="/public/vant/vant.min.js"></script>
+  <style>
+    html,
+    body,
+    #app {
+      height: 100%;
+      background-color: #f7f8fa;
+
+      --cell-value-color: red;
+    }
+
+    .personal-center {
+      padding: 20px;
+    }
+
+    .avatar-wrapper {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+
+    .user-info p {
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <van-nav-bar :title="tabbarActive"></van-nav-bar>
+
+    <!-- 报价 -->
+    <div v-if="tabbarActive === '报价'">
+      <van-tabs v-model="tabActive" @change="getTodayPrice">
+        <van-tab title="苹果" name="苹果"></van-tab>
+        <van-tab title="华为" name="华为"></van-tab>
+      </van-tabs>
+
+      <!-- <van-search
+          v-model="searchValue"
+          placeholder="请输入搜索关键词"
+        ></van-search> -->
+
+      <div style="
+            padding: 0 1rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          ">
+        <div style="margin-left: 0.2rem; opacity: 0.75">
+          更新时间 : @{ .today }
+        </div>
+        <van-icon name="replay" @click="handleRefresh"></van-icon>
+      </div>
+
+      <div style="
+            margin-top: 1rem;
+            padding: 0 1rem;
+            height: calc(100vh - 10rem);
+            overflow-y: auto;
+          ">
+        <van-cell v-for="i in products" :key="i.id" :title="i.model" :label="`${i.color} ${i.version}`" border
+          style="margin-bottom: 0.5rem">
+          <template #default>
+            <div style="display: flex; justify-content: end; align-items: center">
+              <span style="margin-right: 0.8rem">今日</span>
+              <span style="font-size: 1.25rem; color: #1989fa">¥ {{ i.price || '-' }}</span>
+            </div>
+          </template>
+        </van-cell>
+      </div>
+    </div>
+    <!-- 出货 -->
+    <div v-if="tabbarActive === '出货'">
+      <van-cell-group>
+        <van-cell title="单元格" value="内容" />
+        <van-cell title="单元格" value="内容" label="描述信息" />
+      </van-cell-group>
+      <div style="position: fixed; bottom: 80px; right: 20px">
+        <van-button type="primary" color="linear-gradient(to right, #ff6034, #ee0a24)"
+          style="border-radius: 50%; width: 50px; height: 50px;line-height: 50px;" @click="outGoodsShow = true">出</van-button>
+      </div>
+    </div>
+
+    <!-- 我的 -->
+    <div v-else-if="tabbarActive === '我的'">
+      <div class="personal-center">
+        <div class="avatar-wrapper">
+          <img src="https://img01.yzcdn.cn/vant/cat.jpeg" alt="头像" class="avatar" />
+        </div>
+        <div class="user-info">
+          <p class="username">@{ .user.Username }</p>
+          <!-- <p class="user-email">邮箱地址</p> -->
+        </div>
+        <van-cell-group>
+          <van-cell title="我的订单" is-link>
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell>
+          <!-- <van-cell title="我的收藏" is-link>
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell>
+          <van-cell title="设置" is-link>
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell>
+          <van-cell title="关于我们" is-link>
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell> -->
+          <van-cell title="退出登录" is-link @click="showLogoutAction = true">
+            <template #right-icon>
+              <van-icon name="arrow" />
+            </template>
+          </van-cell>
+        </van-cell-group>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <van-tabbar v-model="tabbarActive">
+      <van-tabbar-item name="报价" icon="bag-o">报价</van-tabbar-item>
+      <van-tabbar-item name="出货" icon="send-gift-o">出货</van-tabbar-item>
+      <van-tabbar-item name="我的" icon="user-o">我的</van-tabbar-item>
+    </van-tabbar>
+
+    <van-action-sheet v-model="showLogoutAction" :actions="logoutActions" @select="onSelectLogoutAction"
+      cancel-text="取消"></van-action-sheet>
+    
+  </div>
+
+  <script>
+    // 7FJO2bkJ9H24eDlP6JaE
+    // MxOcLfwNLaEq8HD4EkMAksuUgxHAYHKYvxvWPZaI
+    // 在 #app 标签下渲染一个按钮组件
+    new Vue({
+      el: "#app",
+      // 设置分隔符
+      data() {
+        return {
+          tabActive: "苹果",
+          tabbarActive: "报价",
+          searchValue: "",
+
+          outGoodsShow: false,
+
+          products: [],
+
+          showLogoutAction: false,
+          logoutActions: [
+            {
+              name: "退出登录",
+              color: "#ee0a24",
+            }
+          ]
+        };
+      },
+      created() {
+        this.getTodayPrice();
+      },
+      mounted() {
+        this.outGoodsRef = this.$refs.outGoodsRef;
+      },
+      methods: {
+        onSelectLogoutAction(item) {
+          if (item.name === "退出登录") {
+            this.showLogoutAction = false;
+            this.handleLogout();
+          }
+        },
+        handleRefresh() {
+          this.getTodayPrice();
+          vant.Toast.success("刷新成功");
+        },
+        handleLogout() {
+          fetch("/api/logout", {
+            method: "POST",
+          }).then((res) => res.json())
+            .then((res) => {
+              if (res.code === 0) {
+                vant.Toast.success("退出登录成功");
+                setTimeout(() => {
+                  location.href = "/";
+                }, 1000);
+              } else {
+                vant.Toast.fail("退出登录失败");
+              }
+            });
+        },
+        getTodayPrice() {
+          try {
+            fetch(`/api/product?brand=${this.tabActive}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.code === 0) {
+                  this.products = data.data;
+                } else {
+                  vant.Toast("获取数据失败");
+                }
+              });
+          } catch (error) {
+            vant.Toast("网络请求失败");
+          }
+        },
+      },
+    });
+
+    // 可以通过下面的方式手动注册
+    //   Vue.use(vant.Lazyload);
+  </script>
+</body>
+
+</html>

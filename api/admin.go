@@ -9,7 +9,7 @@ import (
 )
 
 func AdminView(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "admin.html", gin.H{
+	ctx.HTML(http.StatusOK, "admin_index.html", gin.H{
 		"title": "管理后台",
 		"today": time.Now().Format("2006-01-02"),
 	})

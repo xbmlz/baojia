@@ -8,6 +8,10 @@ import (
 
 var db *gorm.DB
 
+func GetDB() *gorm.DB {
+	return db
+}
+
 func InitDB(dsn string) (err error) {
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
@@ -19,5 +23,5 @@ func InitDB(dsn string) (err error) {
 }
 
 func MigrateTable() {
-	db.AutoMigrate(&Product{}, &Price{})
+	db.AutoMigrate(&Product{}, &Price{}, &User{})
 }

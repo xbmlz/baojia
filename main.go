@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
 	"github.com/xbmlz/baojia/api"
+	"github.com/xbmlz/baojia/middleware"
 	"github.com/xbmlz/baojia/model"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -22,15 +25,29 @@ func main() {
 	r.StaticFS("/public", http.Dir("public"))
 	r.LoadHTMLGlob("templates/*")
 
-	r.GET("/admin", api.AdminView)
+	store := gormsessions.NewStore(model.GetDB(), true, []byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
 
-	apis := r.Group("api")
+	r.GET("/login.html", api.AppLoginView)
+
+	adminRouter := r.Group("", middleware.AdminLoginRequired())
 	{
-		apis.GET("product", api.GetProducts)
-		apis.POST("price", api.SavePrice)
+		adminRouter.GET("admin", api.AdminView)
 	}
 
-	r.GET("/", api.IndexView)
+	appRouter := r.Group("", middleware.AppLoginRequired())
+	{
+		appRouter.GET("/", api.AppIndexView)
+	}
+
+	apiRouter := r.Group("api")
+	{
+		apiRouter.GET("product", api.GetProducts)
+		apiRouter.POST("price", api.SavePrice)
+		apiRouter.POST("register", api.AppRegister)
+		apiRouter.POST("login", api.AppLogin)
+		apiRouter.POST("logout", api.AppLogout)
+	}
 
 	r.Run()
 }

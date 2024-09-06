@@ -3,23 +3,27 @@ package model
 import "time"
 
 type Product struct {
-	ID        int     `gorm:"autoIncrement;primary_key" json:"id"`
-	Brand     string  `json:"brand"`
-	Series    string  `json:"series"`
-	Model     string  `json:"model"`
-	Color     string  `json:"color"`
-	Version   string  `json:"version"`
-	Price     float64 `json:"price" gorm:"-"`
-	LastPrice float64 `json:"last_price" gorm:"-"`
+	ID            int    `gorm:"autoIncrement;primary_key" json:"id"`
+	Brand         string `json:"brand"`
+	Series        string `json:"series"`
+	Model         string `json:"model"`
+	Color         string `json:"color"`
+	Version       string `json:"version"`
+	RecoveryPrice string `json:"recovery_price" gorm:"-"`
+	Price         string `json:"price" gorm:"-"`
+	LastPrice     string `json:"last_price" gorm:"-"`
+	Profit        string `json:"profit" gorm:"-"`
 }
 
 type Products []Product
 
 type Price struct {
-	ID        int       `gorm:"autoIncrement;primary_key" json:"id"`
-	ProductID int       `json:"product_id"`
-	Price     float64   `json:"price"`
-	CreatedAt time.Time `json:"created_at"`
+	ID            int       `gorm:"autoIncrement;primary_key" json:"id"`
+	ProductID     int       `json:"product_id"`
+	Price         float64   `json:"price"`
+	RecoveryPrice float64   `json:"recovery_price"`
+	Profit        float64   `json:"profit"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 type Prices []Price
@@ -64,13 +68,21 @@ func GetPriceList(ids []int) (prices Prices) {
 	return
 }
 
-func SavePrice(price Price) {
+func GetCurrentPrice(productIDs []int) (prices Prices) {
+	db.Where("product_id in (?) AND to_char(created_at, 'YYYY-MM-DD') = ?", productIDs, time.Now().Format("2006-01-02")).Find(&prices)
+	return
+}
+
+func SavePrice(productID int, price float64, profit float64) {
 	var p Price
 	// 根据 id 和 created_at(yyyy-mm-dd) 判断是否存在记录，如果存在，则更新，不存在则插入
-	db.Where("product_id =? AND to_char(created_at, 'YYYY-MM-DD') = ?", price.ProductID, time.Now().Format("2006-01-02")).First(&p)
+	db.Where("product_id =? AND to_char(created_at, 'YYYY-MM-DD') = ?", productID, time.Now().Format("2006-01-02")).First(&p)
 	if p.ID > 0 {
-		db.Model(&p).Updates(Price{Price: price.Price})
+		db.Model(&p).Updates(Price{RecoveryPrice: price + profit, Profit: profit, Price: price})
 	} else {
-		db.Create(&price)
+		p.Price = price
+		p.RecoveryPrice = price + profit
+		p.ProductID = productID
+		db.Create(&p)
 	}
 }

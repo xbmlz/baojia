@@ -30,9 +30,12 @@ func main() {
 
 	r.GET("/login.html", api.AppLoginView)
 
-	adminRouter := r.Group("", middleware.AdminLoginRequired())
+	adminRouter := r.Group("admin", middleware.AdminLoginRequired())
 	{
-		adminRouter.GET("admin", api.AdminView)
+		adminRouter.GET("", api.AdminView)
+
+		adminRouter.GET("/api/product", api.GetProducts)
+		adminRouter.POST("/api/price", api.SavePrice)
 	}
 
 	appRouter := r.Group("", middleware.AppLoginRequired())
@@ -40,13 +43,12 @@ func main() {
 		appRouter.GET("/", api.AppIndexView)
 	}
 
-	apiRouter := r.Group("api")
+	apiRouter := r.Group("/api")
 	{
-		apiRouter.GET("product", api.GetProducts)
-		apiRouter.POST("price", api.SavePrice)
-		apiRouter.POST("register", api.AppRegister)
-		apiRouter.POST("login", api.AppLogin)
-		apiRouter.POST("logout", api.AppLogout)
+		apiRouter.GET("/product", api.GetAppProducts)
+		apiRouter.POST("/register", api.AppRegister)
+		apiRouter.POST("/login", api.AppLogin)
+		apiRouter.POST("/logout", api.AppLogout)
 	}
 
 	r.Run("0.0.0.0:8080")

@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -131,5 +132,27 @@ func AppLogout(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "退出成功",
+	})
+}
+
+func GetAppProducts(ctx *gin.Context) {
+	brand := ctx.Query("brand")
+	products := model.GetProductList(brand)
+	prices := model.GetCurrentPrice(products.ToIDs())
+	for i, product := range products {
+		for _, price := range prices {
+			if price.ProductID == product.ID {
+				products[i].Price = ""
+				products[i].Profit = ""
+				products[i].RecoveryPrice = strconv.FormatFloat(price.RecoveryPrice, 'f', 2, 64)
+			}
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":  0,
+		"msg":   "success",
+		"data":  products,
+		"count": len(products),
 	})
 }

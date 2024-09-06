@@ -5,6 +5,9 @@ WORKDIR /src
 
 COPY . .
 
+RUN go env -w GO111MODULE=auto
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+
 RUN go build -o baojia .
 
 # Run

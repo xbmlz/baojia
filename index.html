@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="uploadForm">
+      <input type="file" name="fileToUpload" id="fileToUpload" />
+      <input type="submit" value="Upload File" id="uploadButton" />
+    </form>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const fileInput = document.getElementById("fileToUpload");
+          const file = fileInput.files[0];
+          if (!file) {
+            alert("Please select a file.");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          // MinIO 的访问地址和端口
+          const minioEndpoint = "https://minio.xbmlz.cc/";
+          const minioAccessKey = "7FJO2bkJ9H24eDlP6JaE";
+          const minioSecretKey = "MxOcLfwNLaEq8HD4EkMAksuUgxHAYHKYvxvWPZaI";
+          const minioBucketName = "baojia";
+
+          fetch(`${minioEndpoint}/minio/putObject?bucket=${minioBucketName}`, {
+            method: "PUT",
+            body: formData,
+            headers: {
+              "X-Amz-Access-Key": minioAccessKey,
+              "X-Amz-Secret-Key": minioSecretKey,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("File uploaded successfully:", data);
+              alert("File uploaded successfully.");
+            })
+            .catch((error) => {
+              console.error("Error uploading file:", error);
+              alert("Error uploading file.");
+            });
+        });
+    </script>
+  </body>
+</html>

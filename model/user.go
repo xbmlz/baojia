@@ -8,7 +8,7 @@ import (
 type User struct {
 	ID        int    `gorm:"autoIncrement;primary_key" json:"id"`
 	Username  string `json:"username"`
-	Password  string `json:"password"`
+	Password  string `json:"-"`
 	Email     string `json:"email"`
 	AvatarURL string `json:"avatar_url"`
 	IsAdmin   bool   `json:"is_admin" default:"false"`

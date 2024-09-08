@@ -9,6 +9,19 @@
     <form class="layui-form layui-form-pane layui-row layui-col-space16">
         <div class="layui-col-md3">
             <div class="layui-form-item" style="margin-bottom: 0">
+                <label class="layui-form-label">类型 :</label>
+                <div class="layui-input-block">
+                    <select name="interest" lay-filter="type-select">
+                        <option value="1">手机</option>
+                        <option value="2">平板</option>
+                        <option value="3">平板</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md3">
+            <div class="layui-form-item" style="margin-bottom: 0">
                 <label class="layui-form-label">品牌 :</label>
                 <div class="layui-input-block">
                     <select name="interest" lay-filter="brand-select">
@@ -30,6 +43,14 @@
             form.on("select(brand-select)", function (data) {
                 table.reload("price-table", {
                     where: { brand: data.value },
+                });
+            });
+
+            form.on("select(type-select)", function (data) {
+                table.reload("price-table", {
+                    where: { 
+                        type: parseInt(data.value)
+                     },
                 });
             });
 
@@ -85,7 +106,7 @@
                 console.log(obj);
 
                 // 修改为最新价格
-                const recovery_price = (parseFloat(data.price) || 0) + (parseFloat(data.profit) || 0);
+                const recovery_price = (parseFloat(data.price) || 0) - (parseFloat(data.profit) || 0);
 
                 const isNil = value.replace(/\s/g, "") === "";
                 const isNumber = /^-?\d+(\.\d+)?$/.test(value);

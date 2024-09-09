@@ -1,7 +1,8 @@
-package api
+package model
 
-type Out struct {
-	ProductID   string `json:"product_id"`    // 产品ID
+type Sale struct {
+	ID          int    `gorm:"autoIncrement;primary_key" json:"id"`
+	ProductID   int    `json:"product_id"`    // 产品ID
 	OrderImg    string `json:"order_img"`     // 订单截图
 	PkgFrontImg string `json:"pkg_front_img"` // 包装正面照片
 	PkgBackImg  string `json:"pkg_back_img"`  // 包装背面照片
@@ -14,4 +15,8 @@ type Out struct {
 	UpdateTime  string `json:"update_time"`   // 更新时间
 }
 
-type Outs []Out
+type Sales []Sale
+
+func CreateSale(s Sale) (err error) {
+	return db.Create(&s).Error
+}

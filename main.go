@@ -5,6 +5,7 @@ import (
 
 	"github.com/xbmlz/baojia/api"
 	"github.com/xbmlz/baojia/model"
+	"github.com/xbmlz/baojia/oss"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -14,6 +15,8 @@ func main() {
 
 	model.InitDB(dsn)
 	model.MigrateTable()
+
+	oss.InitMinioClient()
 
 	r := api.InitRouter()
 

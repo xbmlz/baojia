@@ -1,6 +1,10 @@
 package model
 
-import "errors"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type Product struct {
 	ID        int    `gorm:"autoIncrement;primary_key" json:"id"`
@@ -48,7 +52,9 @@ func AddProduct(product Product) error {
 }
 
 func GetProductList(product_type int, brand string) (products Products) {
-	db := db.Model(&Product{}).Preload("Prices").Where("type = ?", product_type)
+	db := db.Model(&Product{}).Preload("Prices", func(db *gorm.DB) *gorm.DB {
+		return db.Order("created_at DESC")
+	}).Where("type = ?", product_type)
 	if brand != "" {
 		db = db.Where("brand = ?", brand)
 	}

@@ -1,8 +1,6 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/gin-contrib/sessions"
 	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
@@ -12,10 +10,6 @@ import (
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
-	r.Delims("@{", "}")
-
-	r.StaticFS("/public", http.Dir("public"))
-	r.LoadHTMLGlob("templates/*")
 
 	store := gormsessions.NewStore(model.GetDB(), true, []byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
@@ -35,6 +29,7 @@ func InitRouter() *gin.Engine {
 			authRouter.GET("/user", GetUserInfo)
 			authRouter.POST("/price", UpdatePrice)
 			authRouter.POST("/sale", CreateSale)
+			authRouter.GET("/sales", GetSales)
 		}
 	}
 	return r

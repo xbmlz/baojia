@@ -20,3 +20,13 @@ type Sales []Sale
 func CreateSale(s Sale) (err error) {
 	return db.Create(&s).Error
 }
+
+func GetSales() (sales Sales, err error) {
+	err = db.Find(&sales).Error
+	return
+}
+
+func GetSalesByUser(userID int) (sales Sales, err error) {
+	err = db.Where("user_id = ?", userID).Find(&sales).Error
+	return
+}

@@ -26,8 +26,6 @@ RUN apk add --no-cache bash ca-certificates tzdata \
 WORKDIR /app
 
 COPY --from=builder /src/baojia .
-COPY --from=builder /src/public ./public
-COPY --from=builder /src/templates ./templates
 
 EXPOSE 8080
 

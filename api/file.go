@@ -34,3 +34,17 @@ func UploadFile(c *gin.Context) {
 		"data": filename,
 	})
 }
+
+func GetFile(c *gin.Context) {
+	// path is /file/:name
+	filename := c.Param("name")
+	fileUrl, err := oss.GetFileURL("baojia", filename)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg":  "download file failed," + err.Error(),
+		})
+		return
+	}
+	c.Redirect(http.StatusFound, fileUrl.String())
+}

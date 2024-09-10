@@ -4,6 +4,10 @@ import (
 	"context"
 	"io"
 	"log"
+	"mime"
+	"net/url"
+	"path/filepath"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -32,10 +36,32 @@ func InitMinioClient() {
 }
 
 func UploadFile(bucketName, objectName string, reader io.Reader, objectSize int64) (err error) {
-	info, err := MinioClient.PutObject(context.Background(), bucketName, objectName, reader, objectSize, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	contentType := getContentTypeFromFileName(objectName)
+	info, err := MinioClient.PutObject(context.Background(), bucketName, objectName, reader, objectSize, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		return err
 	}
 	log.Printf("Upload Success, ETag: %s\n", info.ETag)
 	return nil
+}
+
+func GetFileURL(bucketName, objectName string) (u *url.URL, err error) {
+	reqParams := make(url.Values)
+	// content-type is image
+	contentType := getContentTypeFromFileName(objectName)
+	reqParams.Set("content-type", contentType)
+	u, err = MinioClient.PresignedGetObject(context.Background(), bucketName, objectName, time.Second*24*60*60, reqParams)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func getContentTypeFromFileName(filename string) string {
+	ext := filepath.Ext(filename)
+	contentType := mime.TypeByExtension(ext)
+	if contentType == "" {
+		return "application/octet-stream"
+	}
+	return contentType
 }

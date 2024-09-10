@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -127,18 +128,10 @@ func Logout(ctx *gin.Context) {
 func GetUserInfo(ctx *gin.Context) {
 	// session := sessions.Default(ctx)
 	// userID := session.Get(middleware.SessionUserKey)
-	userID := ctx.GetInt(middleware.CurrentUserKey)
-	if userID == 0 {
+	user, err := getLoginUser(ctx)
+	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"code": 4013,
-			"msg":  "用户未登录",
-		})
-		return
-	}
-	user, err := model.GetUserByID(userID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"code": -1,
 			"msg":  err.Error(),
 		})
 		return
@@ -149,4 +142,16 @@ func GetUserInfo(ctx *gin.Context) {
 		"msg":  "success",
 		"data": user,
 	})
+}
+
+func getLoginUser(ctx *gin.Context) (*model.User, error) {
+	userID := ctx.GetInt(middleware.CurrentUserKey)
+	if userID == 0 {
+		return nil, errors.New("用户未登录")
+	}
+	user, err := model.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

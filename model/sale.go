@@ -59,7 +59,6 @@ func ConfirmSale(id int, price float64, payment int, receiver int) (err error) {
 	sale.Status = 1
 	sale.Payment = payment
 	sale.Receiver = receiver
-	sale.ReceiveTime = time.Now().Format("2006-01-02 15:04:05")
 	sale.UpdateTime = time.Now()
 	err = db.Save(&sale).Error
 	return

@@ -36,7 +36,7 @@ func InitMinioClient() {
 }
 
 func UploadFile(bucketName, objectName string, reader io.Reader, objectSize int64) (err error) {
-	contentType := getContentTypeFromFileName(objectName)
+	contentType := GetContentTypeFromFileName(objectName)
 	info, err := MinioClient.PutObject(context.Background(), bucketName, objectName, reader, objectSize, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func UploadFile(bucketName, objectName string, reader io.Reader, objectSize int6
 func GetFileURL(bucketName, objectName string) (u *url.URL, err error) {
 	reqParams := make(url.Values)
 	// content-type is image
-	contentType := getContentTypeFromFileName(objectName)
+	contentType := GetContentTypeFromFileName(objectName)
 	reqParams.Set("content-type", contentType)
 	u, err = MinioClient.PresignedGetObject(context.Background(), bucketName, objectName, time.Second*24*60*60, reqParams)
 	if err != nil {
@@ -57,7 +57,15 @@ func GetFileURL(bucketName, objectName string) (u *url.URL, err error) {
 	return u, nil
 }
 
-func getContentTypeFromFileName(filename string) string {
+func GetFile(bucketName, objectName string) (reader io.ReadCloser, err error) {
+	reader, err = MinioClient.GetObject(context.Background(), bucketName, objectName, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return reader, nil
+}
+
+func GetContentTypeFromFileName(filename string) string {
 	ext := filepath.Ext(filename)
 	contentType := mime.TypeByExtension(ext)
 	if contentType == "" {

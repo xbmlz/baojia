@@ -1,6 +1,9 @@
 package api
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -38,7 +41,17 @@ func UploadFile(c *gin.Context) {
 func GetFile(c *gin.Context) {
 	// path is /file/:name
 	filename := c.Param("name")
-	fileUrl, err := oss.GetFileURL("baojia", filename)
+	// fileUrl, err := oss.GetFileURL("baojia", filename)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{
+	// 		"code": -1,
+	// 		"msg":  "download file failed," + err.Error(),
+	// 	})
+	// 	return
+	// }
+	// c.Redirect(http.StatusFound, fileUrl.String())
+
+	fio, err := oss.GetFile("baojia", filename)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code": -1,
@@ -46,5 +59,12 @@ func GetFile(c *gin.Context) {
 		})
 		return
 	}
-	c.Redirect(http.StatusFound, fileUrl.String())
+
+	defer fio.Close()
+
+	buf := bytes.NewBuffer(nil)
+	io.Copy(buf, fio)
+
+	c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	c.Data(http.StatusOK, "application/octet-stream", buf.Bytes())
 }

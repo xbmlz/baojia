@@ -49,7 +49,7 @@ func JwtAuthRequired() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set(CurrentUserKey, claims)
+		c.Set(CurrentUserKey, claims.UserID)
 		c.Next()
 	}
 }

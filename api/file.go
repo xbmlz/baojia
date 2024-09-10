@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/xbmlz/baojia/oss"
+	"github.com/xbmlz/baojia/utils/oss"
 )
 
 func UploadFile(c *gin.Context) {

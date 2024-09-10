@@ -23,7 +23,7 @@ func InitRouter() *gin.Engine {
 		apiRouter.POST("/register", Register)
 		apiRouter.POST("/upload", UploadFile)
 
-		authRouter := apiRouter.Group("", middleware.LoginRequired())
+		authRouter := apiRouter.Group("", middleware.JwtAuthRequired())
 		{
 			authRouter.GET("/products", GetProducts)
 			authRouter.GET("/user", GetUserInfo)

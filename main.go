@@ -5,7 +5,7 @@ import (
 
 	"github.com/xbmlz/baojia/api"
 	"github.com/xbmlz/baojia/model"
-	"github.com/xbmlz/baojia/oss"
+	"github.com/xbmlz/baojia/utils/oss"
 
 	_ "github.com/joho/godotenv/autoload"
 )

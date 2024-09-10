@@ -53,7 +53,7 @@ func AddProduct(product Product) error {
 
 func GetProductList(product_type int, brand string) (products Products) {
 	db := db.Model(&Product{}).Preload("Prices", func(db *gorm.DB) *gorm.DB {
-		return db.Order("created_at DESC")
+		return db.Order("id DESC")
 	}).Where("type = ?", product_type)
 	if brand != "" {
 		db = db.Where("brand = ?", brand)

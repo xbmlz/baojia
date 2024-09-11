@@ -24,6 +24,7 @@ func InitRouter() *gin.Engine {
 		apiRouter.POST("/upload", UploadFile)
 		apiRouter.GET("/file/:name", GetFile)
 		apiRouter.GET("/products", GetProducts)
+		apiRouter.GET("/product/types", GetProductTypes)
 
 		authRouter := apiRouter.Group("", middleware.JwtAuthRequired())
 		{
@@ -33,6 +34,8 @@ func InitRouter() *gin.Engine {
 			authRouter.GET("/sales", GetSales)
 			authRouter.GET("/sale/:id", GetSale)
 			authRouter.PUT("/sale/confirm", ConfirmSale)
+			authRouter.GET("/brands", GetBrands)
+			authRouter.POST("/product", AddProduct)
 		}
 	}
 	return r

@@ -20,6 +20,13 @@ type Product struct {
 
 type Products []Product
 
+type ProductType struct {
+	ID   int    `gorm:"autoIncrement;primary_key" json:"id"`
+	Name string `json:"name"`
+}
+
+type ProductTypes []ProductType
+
 type Price struct {
 	ID        int     `gorm:"autoIncrement;primary_key" json:"id"`
 	ProductID int     `json:"product_id"`
@@ -75,32 +82,12 @@ func AddPrice(price Price) {
 	db.Create(&price)
 }
 
-// // 查询最后一次价格
-// func GetLastPrice(productID int) (price Price) {
-// 	db.Where("product_id = ? ", productID, time.Now()).Order("created_at desc").First(&price)
-// 	return
-// }
+func GetBrandList(t int) (brands []string) {
+	db.Table("products").Select("brand").Where("type = ?", t).Group("brand").Find(&brands)
+	return
+}
 
-// func GetPriceList(ids []int) (prices Prices) {
-// 	db.Where("product_id IN (?)", ids).Find(&prices)
-// 	return
-// }
-
-// func GetCurrentPrice(productIDs []int) (prices Prices) {
-// 	db.Where("product_id in (?) AND to_char(created_at, 'YYYY-MM-DD') = ?", productIDs, time.Now().Format("2006-01-02")).Find(&prices)
-// 	return
-// }
-
-// func SavePrice(productID int, price float64, profit float64) {
-// 	var p Price
-// 	// 根据 id 和 created_at(yyyy-mm-dd) 判断是否存在记录，如果存在，则更新，不存在则插入
-// 	db.Where("product_id =? AND to_char(created_at, 'YYYY-MM-DD') = ?", productID, time.Now().Format("2006-01-02")).First(&p)
-// 	if p.ID > 0 {
-// 		db.Model(&p).Updates(Price{RecoveryPrice: price + profit, Profit: profit, Price: price})
-// 	} else {
-// 		p.Price = price
-// 		p.RecoveryPrice = price + profit
-// 		p.ProductID = productID
-// 		db.Create(&p)
-// 	}
-// }
+func GetProductTypeList() (types ProductTypes) {
+	db.Find(&types)
+	return
+}

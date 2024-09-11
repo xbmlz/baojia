@@ -125,7 +125,7 @@ func UpdatePrice(ctx *gin.Context) {
 	price := model.GetPriceByDate(req.ProductID, req.CreatedAt)
 	if price.ID > 0 {
 		// 更新价格记录
-		price.InPrice = req.OutPrice - req.InPrice
+		price.InPrice = req.InPrice
 		price.OutPrice = req.OutPrice
 		price.Profit = req.Profit
 		price.CreatedAt = req.CreatedAt
@@ -134,7 +134,7 @@ func UpdatePrice(ctx *gin.Context) {
 		// 新增价格记录
 		price = model.Price{
 			ProductID: req.ProductID,
-			InPrice:   req.OutPrice - req.InPrice,
+			InPrice:   req.InPrice,
 			OutPrice:  req.OutPrice,
 			Profit:    req.Profit,
 			CreatedAt: req.CreatedAt,

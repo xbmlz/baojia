@@ -26,16 +26,24 @@ func InitRouter() *gin.Engine {
 		apiRouter.GET("/products", GetProducts)
 		apiRouter.GET("/product/types", GetProductTypes)
 		apiRouter.GET("/brands", GetBrands)
+		apiRouter.GET("/articles", GetArticles)
+		apiRouter.GET("/article/:id", GetArticle)
 
 		authRouter := apiRouter.Group("", middleware.JwtAuthRequired())
 		{
 			authRouter.GET("/user", GetUserInfo)
-			authRouter.POST("/price", UpdatePrice)
+
+			authRouter.POST("/product", AddProduct)
+			authRouter.POST("/product/price", UpdatePrice)
+
 			authRouter.POST("/sale", CreateSale)
 			authRouter.GET("/sales", GetSales)
 			authRouter.GET("/sale/:id", GetSale)
 			authRouter.PUT("/sale/confirm", ConfirmSale)
-			authRouter.POST("/product", AddProduct)
+
+			authRouter.POST("/article", AddArticle)
+			authRouter.PUT("/article", UpdateArticle)
+			authRouter.DELETE("/article/:id", DeleteArticle)
 		}
 	}
 	return r

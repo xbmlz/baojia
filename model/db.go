@@ -23,5 +23,5 @@ func InitDB(dsn string) (err error) {
 }
 
 func MigrateTable() {
-	db.AutoMigrate(&Product{}, &ProductType{}, &Price{}, &User{}, &Sale{})
+	db.AutoMigrate(&Product{}, &ProductType{}, &Price{}, &User{}, &Sale{}, &Article{})
 }

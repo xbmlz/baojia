@@ -1,6 +1,8 @@
 package api
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/xbmlz/baojia/pkg/wechat"
 )
@@ -22,6 +24,10 @@ func SendMessage(c *gin.Context) {
 
 	f, err := wechat.Self.Friends()
 
+	for _, friend := range f {
+		log.Println(friend.NickName)
+	}
+
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -33,6 +39,7 @@ func SendMessage(c *gin.Context) {
 	for _, toUser := range req.ToUsers {
 		for _, friend := range f {
 			if friend.NickName == toUser {
+				log.Println("send message to " + toUser)
 				friend.SendText(req.Content)
 			}
 		}

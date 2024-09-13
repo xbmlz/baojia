@@ -32,4 +32,9 @@ func InitWeChatBot() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = Bot.Block()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

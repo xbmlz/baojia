@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/xbmlz/baojia/utils/token"
+	"github.com/xbmlz/baojia/pkg/token"
 )
 
 const (

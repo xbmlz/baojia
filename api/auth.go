@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/xbmlz/baojia/middleware"
 	"github.com/xbmlz/baojia/model"
-	"github.com/xbmlz/baojia/utils/token"
+	"github.com/xbmlz/baojia/pkg/token"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -73,10 +73,11 @@ func AddProduct(ctx *gin.Context) {
 func GetProducts(ctx *gin.Context) {
 	product_type := ctx.Query("type")
 	brand := ctx.Query("brand")
+	search := ctx.Query("search")
 
 	pt, _ := strconv.Atoi(product_type)
 
-	products := model.GetProductList(pt, brand)
+	products := model.GetProductList(pt, brand, search)
 	// for i, product := range products {
 	// 	for _, price := range prices {
 	// 		if price.ProductID == product.ID {

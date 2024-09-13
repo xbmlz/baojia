@@ -58,12 +58,16 @@ func AddProduct(product Product) error {
 	return nil
 }
 
-func GetProductList(product_type int, brand string) (products Products) {
+func GetProductList(product_type int, brand string, search string) (products Products) {
 	db := db.Model(&Product{}).Preload("Prices", func(db *gorm.DB) *gorm.DB {
 		return db.Order("id DESC")
 	}).Where("type = ?", product_type)
 	if brand != "" {
 		db = db.Where("brand = ?", brand)
+	}
+	if search != "" {
+		db = db.Where("brand LIKE ? OR series LIKE ? OR model LIKE ? OR color LIKE ? OR version LIKE ?",
+			"%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	db.Find(&products)
 	return

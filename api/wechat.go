@@ -36,11 +36,34 @@ func SendMessage(c *gin.Context) {
 		return
 	}
 
+	g, err := wechat.Self.Groups()
+
+	for _, group := range g {
+		log.Println(group.NickName)
+	}
+
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"msg":  "send message failed, err: " + err.Error(),
+		})
+		return
+	}
+
 	for _, toUser := range req.ToUsers {
 		for _, friend := range f {
 			if friend.NickName == toUser {
 				log.Println("send message to " + toUser)
 				friend.SendText(req.Content)
+			}
+		}
+	}
+
+	for _, toUser := range req.ToUsers {
+		for _, group := range g {
+			if group.NickName == toUser {
+				log.Println("send message to " + toUser)
+				group.SendText(req.Content)
 			}
 		}
 	}

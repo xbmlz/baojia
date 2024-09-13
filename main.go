@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/robfig/cron/v3"
 	"github.com/xbmlz/baojia/api"
+	"github.com/xbmlz/baojia/cron"
 	"github.com/xbmlz/baojia/model"
 	"github.com/xbmlz/baojia/pkg/oss"
 	"github.com/xbmlz/baojia/pkg/wechat"
@@ -30,12 +30,7 @@ func main() {
 
 	// cron
 	go func() {
-		c := cron.New()
-		c.AddFunc("@every 5s", func() {
-			log.Println("test cron")
-		})
-
-		c.Start()
+		cron.Run()
 	}()
 
 	r := api.InitRouter()

@@ -11,7 +11,6 @@ type SendMessageRequest struct {
 }
 
 func SendMessage(c *gin.Context) {
-
 	var req SendMessageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(200, gin.H{

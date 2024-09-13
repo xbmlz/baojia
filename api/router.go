@@ -28,7 +28,7 @@ func InitRouter() *gin.Engine {
 		apiRouter.GET("/brands", GetBrands)
 		apiRouter.GET("/articles", GetArticles)
 		apiRouter.GET("/article/:id", GetArticle)
-		apiRouter.GET("/send_msg", SendMessage)
+		apiRouter.POST("/send-message", SendMessage)
 
 		authRouter := apiRouter.Group("", middleware.JwtAuthRequired())
 		{

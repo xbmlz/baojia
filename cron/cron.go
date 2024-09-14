@@ -23,7 +23,7 @@ func Run() {
 		log.Println("wx notify cron job start")
 		sendWxMsg(`今天明天到货提前联系群主啦
 中秋不放假
-机器人发送`)
+本消息由报价机器人发送机器人发送`)
 		log.Println("wx notify cron job end")
 	})
 	c.Start()

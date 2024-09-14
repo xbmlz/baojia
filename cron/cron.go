@@ -11,7 +11,7 @@ import (
 
 func Run() {
 	c := cron.New()
-	c.AddFunc("0 10,13,16,19 * * *", func() {
+	c.AddFunc("0 10,14,18,22 * * *", func() {
 		log.Println("wx notify cron job start")
 
 		configGroups, err := model.GetConfigByKey("cron:wx-notify-groups")

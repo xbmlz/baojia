@@ -68,7 +68,7 @@ func GetProductList(product_type int, brand string, search string) (products Pro
 	}
 	lowCaseSearch := strings.ToLower(search)
 	if search != "" {
-		db = db.Where("brand LIKE ? OR series LIKE ? OR model LIKE ? OR color LIKE ? OR version LIKE ?",
+		db = db.Where("brand LIKE ? OR series LIKE ? OR lower('model') LIKE ? OR color LIKE ? OR version LIKE ?",
 			"%"+search+"%", "%"+search+"%", "%"+lowCaseSearch+"%", "%"+search+"%", "%"+search+"%")
 	}
 	db.Find(&products)

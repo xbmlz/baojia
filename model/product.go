@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -65,9 +66,10 @@ func GetProductList(product_type int, brand string, search string) (products Pro
 	if brand != "" {
 		db = db.Where("brand = ?", brand)
 	}
+	lowCaseSearch := strings.ToLower(search)
 	if search != "" {
 		db = db.Where("brand LIKE ? OR series LIKE ? OR model LIKE ? OR color LIKE ? OR version LIKE ?",
-			"%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+			"%"+search+"%", "%"+search+"%", "%"+lowCaseSearch+"%", "%"+search+"%", "%"+search+"%")
 	}
 	db.Find(&products)
 	return

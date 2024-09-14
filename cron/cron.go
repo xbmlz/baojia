@@ -13,21 +13,17 @@ func Run() {
 	c := cron.New()
 	c.AddFunc("0 10,14,18,22 * * *", func() {
 		log.Println("wx notify cron job start")
-		sendWxMsg(`
-https://bj.xbmlz.cc/
+		sendWxMsg(`https://bj.xbmlz.cc/
 最新报价网站 华为参考价格 苹果参考价格比较准 
-本消息由报价机器人发送
-		`)
+本消息由报价机器人发送`)
 		log.Println("wx notify cron job end")
 	})
 
-	c.AddFunc("0 0 11,17,21 * *?", func() {
+	c.AddFunc("0 0 11,15,21 * *?", func() {
 		log.Println("wx notify cron job start")
-		sendWxMsg(`
-今天明天到货提前联系群主啦
+		sendWxMsg(`今天明天到货提前联系群主啦
 中秋不放假
-机器人发送 
-		`)
+机器人发送`)
 		log.Println("wx notify cron job end")
 	})
 	c.Start()

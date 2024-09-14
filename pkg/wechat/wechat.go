@@ -23,7 +23,7 @@ func InitWeChatBot() {
 		}
 	}
 
-	err := Bot.HotLogin(reloadStorage, openwechat.NewRetryLoginOption())
+	err := Bot.PushLogin(reloadStorage, openwechat.NewRetryLoginOption())
 	if err != nil {
 		fmt.Println(err)
 	}

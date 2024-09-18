@@ -24,14 +24,9 @@ func main() {
 
 	oss.InitMinioClient()
 
-	go func() {
-		wechat.InitWeChatBot()
-	}()
+	go wechat.InitWeChatBot()
 
-	// cron
-	go func() {
-		cron.Run()
-	}()
+	go cron.Run()
 
 	r := api.InitRouter()
 

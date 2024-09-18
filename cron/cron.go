@@ -4,19 +4,18 @@ import (
 	"log"
 
 	"github.com/robfig/cron/v3"
-	"github.com/xbmlz/baojia/model"
 	"github.com/xbmlz/baojia/pkg/wechat"
 )
 
 func Run() {
 	c := cron.New()
-	// 	c.AddFunc("0 10,14,18,22 * * *", func() {
-	// 		log.Println("wx notify cron job start")
-	// 		sendWxMsg(`https://bj.xbmlz.cc/
-	// 最新报价网站 华为参考价格 苹果参考价格比较准
-	// 本消息由报价机器人发送`)
-	// 		log.Println("wx notify cron job end")
-	// 	})
+	c.AddFunc("0 10,14,18,22 * * *", func() {
+		log.Println("wx notify cron job start")
+		sendWxMsg(`https://bj.xbmlz.cc/
+最新报价网站 华为参考价格 苹果参考价格比较准
+本消息由报价机器人发送`)
+		log.Println("wx notify cron job end")
+	})
 
 	// 	c.AddFunc("0 0 11,15,21 * *?", func() {
 	// 		log.Println("wx notify cron job start")
@@ -27,18 +26,18 @@ func Run() {
 	// 	})
 
 	// 获取所有定时任务
-	confs, err := model.GetConfigsByKey("cron:wx-notify")
-	if err != nil {
-		return
-	}
+	// confs, err := model.GetConfigsByKey("cron:wx-notify")
+	// if err != nil {
+	// 	return
+	// }
 
-	for _, conf := range confs {
-		c.AddFunc(conf.ConfigVal, func() {
-			log.Println("wx notify cron job start")
-			sendWxMsg(conf.Remark)
-			log.Println("wx notify cron job end")
-		})
-	}
+	// for _, conf := range confs {
+	// 	c.AddFunc(conf.ConfigVal, func() {
+	// 		log.Println("wx notify cron job start")
+	// 		sendWxMsg(conf.Remark)
+	// 		log.Println("wx notify cron job end")
+	// 	})
+	// }
 
 	c.Start()
 }

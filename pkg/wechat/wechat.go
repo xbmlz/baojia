@@ -41,8 +41,7 @@ func messageHandler(msg *openwechat.Message) {
 	if msg.IsText() {
 		// 处理消息
 		fmt.Println(msg.Content)
-
-		if strings.HasPrefix(msg.Content, "qun") {
+		if strings.HasPrefix(msg.Content, "qun") || strings.HasPrefix(msg.Content, "q") {
 			sendMsg := strings.TrimPrefix(msg.Content, "qun")
 			user, err := msg.Bot().GetCurrentUser()
 			if err != nil {
